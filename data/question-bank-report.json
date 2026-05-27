@@ -1,0 +1,24 @@
+{
+  "source": "data/source/C证复训题库解析.xlsx",
+  "sheet": "总题目",
+  "generatedAt": "2026-05-27T05:16:24.862Z",
+  "stats": {
+    "total": 1000,
+    "byType": {
+      "单选题": 400,
+      "多选题": 200,
+      "判断题": 400
+    }
+  },
+  "issueCount": 1,
+  "issues": [
+    {
+      "id": 438,
+      "level": "warning",
+      "field": "答案",
+      "raw": "ABC]",
+      "normalized": "ABC",
+      "message": "按用户确认，第 438 题答案由 ABC] 修正为 ABC；未修改源 Excel。"
+    }
+  ]
+}

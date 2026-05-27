@@ -1,0 +1,54 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "职考刷题",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/bank/index",
+      "style": {
+        "navigationBarTitleText": "题库",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/wrong/index",
+      "style": {
+        "navigationBarTitleText": "错题",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/quiz/index",
+      "style": {
+        "navigationBarTitleText": "答题",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "职考刷题",
+    "navigationBarBackgroundColor": "#F5F8FB",
+    "backgroundColor": "#F5F8FB",
+    "backgroundTextStyle": "dark"
+  }
+}
