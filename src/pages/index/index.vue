@@ -27,37 +27,37 @@
           </view>
         </view>
       </view>
-      <button class="primary-action" hover-class="primary-action--hover" @tap="continuePractice">
+      <view v-if="mode === 'practice'" class="primary-action" hover-class="primary-action--hover" @click="continuePractice">
         <u-icon name="play-right-fill" size="18" color="#ffffff" />
         <text>继续练习</text>
-      </button>
+      </view>
     </view>
 
     <view class="mode-switch">
       <button
         class="mode-button"
         :class="{ 'mode-button--active': mode === 'practice' }"
-        @tap="changeMode('practice')"
+        @click="changeMode('practice')"
       >
         练习
       </button>
-      <button class="mode-button" :class="{ 'mode-button--active': mode === 'exam' }" @tap="changeMode('exam')">
+      <button class="mode-button" :class="{ 'mode-button--active': mode === 'exam' }" @click="changeMode('exam')">
         模拟
       </button>
     </view>
 
     <view class="section-head">
-      <text class="section-title">题型练习</text>
-      <text class="section-meta">按现有题库分组</text>
+      <text class="section-title">{{ mode === "practice" ? "题型练习" : "模拟考试" }}</text>
+      <text class="section-meta">{{ mode === "practice" ? "按现有题库分组" : "混合抽题" }}</text>
     </view>
 
-    <view class="type-list">
+    <view v-if="mode === 'practice'" class="type-list">
       <button
         v-for="item in typeCards"
         :key="item.meta.type"
         class="type-card"
         hover-class="type-card--hover"
-        @tap="startType(item.meta.type)"
+        @click="startType(item.meta.type)"
       >
         <view class="type-icon" :style="{ background: item.meta.softColor }">
           <u-icon :name="item.meta.icon" size="25" :color="item.meta.color" />
@@ -75,6 +75,27 @@
       </button>
     </view>
 
+    <view v-else class="exam-list">
+      <button
+        v-for="item in examCards"
+        :key="item.size"
+        class="exam-card"
+        hover-class="type-card--hover"
+        @click="startExam(item.size)"
+      >
+        <view class="exam-main">
+          <view class="exam-icon" :class="item.iconClass">
+            <u-icon name="file-text" size="25" :color="item.color" />
+          </view>
+          <view class="exam-copy">
+            <text class="exam-title">{{ item.title }}</text>
+            <text class="exam-subtitle">{{ item.subtitle }}</text>
+          </view>
+        </view>
+        <u-icon name="arrow-right" size="18" color="#9aa6b8" />
+      </button>
+    </view>
+
     <AppTabBar active="home" />
   </view>
 </template>
@@ -84,9 +105,9 @@ import { computed, ref } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 import AppHeader from "@/components/AppHeader.vue";
 import AppTabBar from "@/components/AppTabBar.vue";
-import { getQuestionCountByType, getQuestionsByType, getTotalQuestionCount, formatPercent } from "@/utils/questionBank";
+import { getQuestionCountByType, getTotalQuestionCount, formatPercent } from "@/utils/questionBank";
 import { getTodayStats, getUserState, setQuizMode } from "@/utils/storage";
-import { questionTypeMetas, type QuestionType, type QuizMode, type UserState } from "@/types/quiz";
+import { questionTypeMetas, type ExamSize, type QuestionType, type QuizMode, type UserState } from "@/types/quiz";
 
 const state = ref<UserState>(getUserState());
 
@@ -94,6 +115,28 @@ const mode = computed(() => state.value.mode);
 const today = computed(() => getTodayStats(state.value));
 const accuracy = computed(() => formatPercent(today.value.correct, today.value.total));
 const totalQuestions = getTotalQuestionCount();
+const examCards: Array<{
+  size: ExamSize;
+  title: string;
+  subtitle: string;
+  color: string;
+  iconClass: string;
+}> = [
+  {
+    size: 10,
+    title: "模拟10题",
+    subtitle: "单选4 · 多选2 · 判断4",
+    color: "#2f7df6",
+    iconClass: "exam-icon--blue",
+  },
+  {
+    size: 100,
+    title: "模拟100题",
+    subtitle: "单选40 · 多选20 · 判断40",
+    color: "#18b884",
+    iconClass: "exam-icon--green",
+  },
+];
 
 const typeCards = computed(() =>
   questionTypeMetas.map((meta) => {
@@ -117,7 +160,11 @@ function changeMode(nextMode: QuizMode) {
 }
 
 function startType(type: QuestionType) {
-  uni.navigateTo({ url: `/pages/quiz/index?type=${type}&mode=${mode.value}` });
+  uni.navigateTo({ url: `/pages/quiz/index?type=${type}&mode=practice` });
+}
+
+function startExam(size: ExamSize) {
+  uni.navigateTo({ url: `/pages/quiz/index?mode=exam&examSize=${size}` });
 }
 
 function continuePractice() {
@@ -259,16 +306,19 @@ function continuePractice() {
   color: #ffffff;
 }
 
-.type-list {
+.type-list,
+.exam-list {
   display: flex;
   flex-direction: column;
   gap: 18rpx;
   margin-top: 18rpx;
 }
 
-.type-card {
+.type-card,
+.exam-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   gap: 20rpx;
   min-height: 112rpx;
@@ -278,7 +328,8 @@ function continuePractice() {
   background: #ffffff;
 }
 
-.type-icon {
+.type-icon,
+.exam-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,15 +338,49 @@ function continuePractice() {
   border-radius: 18rpx;
 }
 
+.exam-icon--blue {
+  background: #eaf2ff;
+}
+
+.exam-icon--green {
+  background: #e8f8f2;
+}
+
 .type-main {
   flex: 1;
   min-width: 0;
 }
 
-.type-title {
+.exam-main {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 20rpx;
+}
+
+.exam-copy {
+  min-width: 0;
+}
+
+.type-title,
+.exam-title {
   color: #162033;
   font-size: 28rpx;
   font-weight: 800;
+}
+
+.exam-title,
+.exam-subtitle {
+  display: block;
+  text-align: left;
+}
+
+.exam-subtitle {
+  margin-top: 8rpx;
+  color: #6b7688;
+  font-size: 24rpx;
+  font-weight: 700;
 }
 
 .progress-track {

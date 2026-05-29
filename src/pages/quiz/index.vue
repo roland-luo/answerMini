@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <AppHeader :title="headerTitle" :subtitle="headerSubtitle" show-back>
-      <button v-if="currentQuestion" class="favorite-button" hover-class="favorite-button--hover" @tap="toggleCurrentFavorite">
+      <button v-if="currentQuestion" class="favorite-button" hover-class="favorite-button--hover" @click="toggleCurrentFavorite">
         <u-icon :name="isCurrentFavorite ? 'star-fill' : 'star'" size="22" :color="isCurrentFavorite ? '#f59e0b' : '#6b7688'" />
       </button>
     </AppHeader>
@@ -29,7 +29,7 @@
             class="option"
             :class="optionClass(option)"
             hover-class="option--hover"
-            @tap="selectOption(option)"
+            @click="selectOption(option)"
           >
             <view class="option-mark">
               <u-icon v-if="isOptionSelected(option)" name="checkbox-mark" size="16" color="#ffffff" />
@@ -61,14 +61,14 @@
     </view>
 
     <view v-if="currentQuestion" class="footer-actions">
-      <button class="footer-icon" hover-class="footer-hover" @tap="toggleCurrentFavorite">
+      <button class="footer-icon" hover-class="footer-hover" @click="toggleCurrentFavorite">
         <u-icon :name="isCurrentFavorite ? 'star-fill' : 'star'" size="23" :color="isCurrentFavorite ? '#f59e0b' : '#6b7688'" />
         <text>收藏</text>
       </button>
-      <button class="secondary-button" :disabled="currentIndex === 0" hover-class="footer-hover" @tap="prevQuestion">
+      <button class="secondary-button" :disabled="currentIndex === 0" hover-class="footer-hover" @click="prevQuestion">
         上一题
       </button>
-      <button class="primary-button" hover-class="footer-hover" @tap="primaryAction">
+      <button class="primary-button" hover-class="footer-hover" @click="primaryAction">
         {{ primaryButtonText }}
       </button>
     </view>
@@ -86,14 +86,16 @@ import {
   getQuestionsByType,
   isAnswerCorrect,
   getQuestionTypeMeta,
+  getRandomExamQuestions,
 } from "@/utils/questionBank";
 import { getUserState, recordAnswer, toggleFavorite, updateProgress } from "@/utils/storage";
-import type { Question, QuizMode, QuestionType, QuizOption } from "@/types/quiz";
+import type { ExamSize, Question, QuizMode, QuestionType, QuizOption } from "@/types/quiz";
 
 type QueryValue = string | string[] | undefined;
 
 const mode = ref<QuizMode>("practice");
 const questionType = ref<QuestionType>("single");
+const examSize = ref<ExamSize | null>(null);
 const questionList = ref<Question[]>([]);
 const currentIndex = ref(0);
 const selectedById = ref<Record<string, string[]>>({});
@@ -105,7 +107,8 @@ const canUpdateProgress = ref(false);
 
 const currentQuestion = computed(() => questionList.value[currentIndex.value]);
 const meta = computed(() => getQuestionTypeMeta(currentQuestion.value?.type ?? questionType.value));
-const headerTitle = computed(() => (currentQuestion.value ? meta.value.label : "答题"));
+const isExamMode = computed(() => mode.value === "exam");
+const headerTitle = computed(() => (isExamMode.value ? "模拟考试" : currentQuestion.value ? meta.value.label : "答题"));
 const headerSubtitle = computed(() => `${mode.value === "practice" ? "练习" : "模拟"} · ${questionList.value.length} 题`);
 const progressPercent = computed(() => formatPercent(currentIndex.value + 1, Math.max(questionList.value.length, 1)));
 const isCurrentFavorite = computed(() => (currentQuestion.value ? favorites.value.includes(currentQuestion.value.id) : false));
@@ -135,6 +138,7 @@ function initQuiz(query?: Record<string, QueryValue>) {
 
   favorites.value = state.favorites;
   mode.value = readMode(pageQuery.mode);
+  examSize.value = mode.value === "exam" ? readExamSize(pageQuery.examSize) : null;
   currentIndex.value = 0;
   selectedById.value = {};
   submittedById.value = {};
@@ -153,6 +157,8 @@ function initQuiz(query?: Record<string, QueryValue>) {
     questionList.value = getQuestionsByIds(Object.keys(state.wrongs).map(Number));
   } else if (source === "favorite") {
     questionList.value = getQuestionsByIds(state.favorites);
+  } else if (mode.value === "exam") {
+    questionList.value = getRandomExamQuestions(examSize.value ?? 10);
   } else {
     canUpdateProgress.value = true;
     questionList.value = getQuestionsByType(type);
@@ -187,6 +193,10 @@ function readMode(value: QueryValue): QuizMode {
 function readQuestionType(value: QueryValue): QuestionType {
   const raw = readString(value);
   return raw === "multiple" || raw === "judge" ? raw : "single";
+}
+
+function readExamSize(value: QueryValue): ExamSize {
+  return readString(value) === "100" ? 100 : 10;
 }
 
 function parseIds(value: string): number[] {

@@ -1,12 +1,26 @@
 import questions from "@/data/questions";
 import {
   questionTypeMetas,
+  type ExamSize,
   type Question,
   type QuestionType,
   type QuestionTypeMeta,
 } from "@/types/quiz";
 
 export const allQuestions = questions;
+
+const examQuotas: Record<ExamSize, Record<QuestionType, number>> = {
+  10: {
+    single: 4,
+    multiple: 2,
+    judge: 4,
+  },
+  100: {
+    single: 40,
+    multiple: 20,
+    judge: 40,
+  },
+};
 
 export function getQuestionTypeMeta(type: QuestionType): QuestionTypeMeta {
   return questionTypeMetas.find((item) => item.type === type) ?? questionTypeMetas[0];
@@ -23,6 +37,14 @@ export function getQuestionById(id: number): Question | undefined {
 export function getQuestionsByIds(ids: number[]): Question[] {
   const idSet = new Set(ids);
   return allQuestions.filter((question) => idSet.has(question.id));
+}
+
+export function getRandomExamQuestions(size: ExamSize): Question[] {
+  const quota = examQuotas[size];
+  const selected = questionTypeMetas.flatMap((meta) =>
+    shuffleQuestions(getQuestionsByType(meta.type)).slice(0, quota[meta.type]),
+  );
+  return shuffleQuestions(selected);
 }
 
 export function getQuestionCountByType(type: QuestionType): number {
@@ -52,4 +74,13 @@ export function formatSelectedAnswer(selected: string[]): string {
 
 export function getTotalQuestionCount(): number {
   return allQuestions.length;
+}
+
+function shuffleQuestions(items: Question[]): Question[] {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const targetIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[targetIndex]] = [shuffled[targetIndex], shuffled[index]];
+  }
+  return shuffled;
 }

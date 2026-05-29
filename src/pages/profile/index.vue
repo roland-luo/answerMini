@@ -44,7 +44,7 @@
           <text class="setting-subtitle">{{ state.mode === "practice" ? "练习模式" : "模拟模式" }}</text>
         </view>
       </view>
-      <button class="danger-row" hover-class="danger-row--hover" @tap="confirmClear">
+      <button class="danger-row" hover-class="danger-row--hover" @click="confirmClear">
         <text>清空本地学习记录</text>
         <u-icon name="trash" size="18" color="#ef4444" />
       </button>

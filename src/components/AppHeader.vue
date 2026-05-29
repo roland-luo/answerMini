@@ -1,6 +1,6 @@
 <template>
   <view class="app-header">
-    <button v-if="showBack" class="header-back" hover-class="header-back--hover" @tap="goBack">
+    <button v-if="showBack" class="header-back" hover-class="header-back--hover" @click="goBack">
       <u-icon name="arrow-left" size="22" color="#172033" />
     </button>
     <view class="header-copy">

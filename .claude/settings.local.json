@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__list_network_requests",
+      "mcp__chrome-devtools__emulate",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__evaluate_script",
+      "Bash(npm run *)",
+      "Bash(lsof -iTCP -sTCP:LISTEN)",
+      "mcp__chrome-devtools__list_pages",
+      "Bash(pkill -f \"chrome-devtools-mcp\")",
+      "Bash(pkill -f \"Chromium\")",
+      "Bash(awk '{print $2}')",
+      "Bash(xargs kill)",
+      "Bash(nohup npx vite --port 5173 --host 127.0.0.1)",
+      "Read(//tmp/**)",
+      "Bash(npx @anthropic-ai/chrome-devtools-mcp http://localhost:5173 --headless=false --timeout=30000)",
+      "Bash(npx @anthropic-ai/chrome-devtools-mcp --help)"
+    ]
+  }
+}

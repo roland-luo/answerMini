@@ -2,6 +2,8 @@ export type QuestionType = "single" | "multiple" | "judge";
 
 export type QuizMode = "practice" | "exam";
 
+export type ExamSize = 10 | 100;
+
 export interface QuizOption {
   label: string;
   text: string;

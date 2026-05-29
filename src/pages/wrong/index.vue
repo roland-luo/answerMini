@@ -3,17 +3,17 @@
     <AppHeader title="错题" subtitle="错题本和收藏题都保存在本地" />
 
     <view class="segmented">
-      <button class="segment" :class="{ 'segment--active': activeKind === 'wrong' }" @tap="activeKind = 'wrong'">
+      <button class="segment" :class="{ 'segment--active': activeKind === 'wrong' }" @click="activeKind = 'wrong'">
         错题本
       </button>
-      <button class="segment" :class="{ 'segment--active': activeKind === 'favorite' }" @tap="activeKind = 'favorite'">
+      <button class="segment" :class="{ 'segment--active': activeKind === 'favorite' }" @click="activeKind = 'favorite'">
         收藏题
       </button>
     </view>
 
     <view v-if="visibleQuestions.length > 0" class="list-head">
       <text class="list-title">{{ activeKind === "wrong" ? "待复习错题" : "已收藏题目" }}</text>
-      <button class="review-button" hover-class="button-hover" @tap="reviewAll">开始重做</button>
+      <button class="review-button" hover-class="button-hover" @click="reviewAll">开始重做</button>
     </view>
 
     <view v-if="visibleQuestions.length > 0" class="question-list">
@@ -22,7 +22,7 @@
         :key="question.id"
         class="question-card"
         hover-class="question-card--hover"
-        @tap="openQuestion(question.id)"
+        @click="openQuestion(question.id)"
       >
         <view class="question-top">
           <text class="question-type">{{ question.typeLabel }}</text>

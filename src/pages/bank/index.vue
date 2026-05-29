@@ -30,11 +30,8 @@
           <view class="progress-fill" :style="{ width: item.percent + '%', background: item.meta.color }" />
         </view>
         <view class="bank-actions">
-          <button class="ghost-button" hover-class="button-hover" @tap="startType(item.meta.type, 'practice')">
+          <button class="ghost-button" hover-class="button-hover" @click="startType(item.meta.type)">
             练习
-          </button>
-          <button class="solid-button" hover-class="button-hover" @tap="startType(item.meta.type, 'exam')">
-            模拟
           </button>
         </view>
       </view>
@@ -51,7 +48,7 @@ import AppHeader from "@/components/AppHeader.vue";
 import AppTabBar from "@/components/AppTabBar.vue";
 import { formatPercent, getQuestionCountByType, getTotalQuestionCount } from "@/utils/questionBank";
 import { getUserState } from "@/utils/storage";
-import { questionTypeMetas, type QuestionType, type QuizMode, type UserState } from "@/types/quiz";
+import { questionTypeMetas, type QuestionType, type UserState } from "@/types/quiz";
 
 const state = ref<UserState>(getUserState());
 const totalQuestions = getTotalQuestionCount();
@@ -75,8 +72,8 @@ onShow(() => {
   state.value = getUserState();
 });
 
-function startType(type: QuestionType, mode: QuizMode) {
-  uni.navigateTo({ url: `/pages/quiz/index?type=${type}&mode=${mode}` });
+function startType(type: QuestionType) {
+  uni.navigateTo({ url: `/pages/quiz/index?type=${type}&mode=practice` });
 }
 </script>
 
@@ -190,13 +187,12 @@ function startType(type: QuestionType, mode: QuizMode) {
 
 .bank-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 18rpx;
   margin-top: 24rpx;
 }
 
-.ghost-button,
-.solid-button {
+.ghost-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,11 +207,6 @@ function startType(type: QuestionType, mode: QuizMode) {
   border: 1rpx solid #d8e4f2;
   color: #2f7df6;
   background: #ffffff;
-}
-
-.solid-button {
-  color: #ffffff;
-  background: #2f7df6;
 }
 
 .button-hover {

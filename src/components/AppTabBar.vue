@@ -6,7 +6,7 @@
       class="tabbar-item"
       :class="{ 'tabbar-item--active': item.key === active }"
       hover-class="tabbar-item--hover"
-      @tap="go(item.url)"
+      @click="go(item.url)"
     >
       <u-icon :name="item.icon" size="22" :color="item.key === active ? '#2f7df6' : '#6b7688'" />
       <text>{{ item.label }}</text>
